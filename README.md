@@ -1,1 +1,1 @@
-## RNA-sequencing pipeline and differential gene expression analysis
+## RNA-sequencing pipeline and gene expression analysis
