@@ -5,16 +5,41 @@ nextflow.enable.dsl=2
  * Params
  ****************************************************/
 params.outdir      = "./results"
-params.input       = "/mnt/d/NEXTFLOW/bulk_RNAseq/data/fastq"
+params.input       = "NEXTFLOW/bulk_RNAseq/data/fastq"
 params.reference   = "Reference/genome.fa"
 params.annotation  = "Reference/annotation.gtf"
 params.genomedir   = "./genome_index"
-//params.sra_script  = "SRA_download.py"        // your existing script (produces fastq/*.fastq.gz)
+//params.sra_script  = "SRA_download.py"       
 
+/****************************************************
+ * Step 1: Download SRA files as FASTQ (one-off job)
+ * - Uses SRA_download.py which writes into fastq/
+ ****************************************************/
+process SRA2fastq {
+    tag "SRA_download"
+    publishDir "${params.outdir}/SRAfastq", mode: 'copy'
+
+    cpus 4
+    memory '8 GB'
+    time '48h'
+
+    input:
+    val trigger
+
+    output:
+    path("fastq")
+
+    script:
+    """
+    set -euo pipefail
+    python ${params.sra_script}
+    # Ensure directory exists and contains gz fastqs
+    test -d fastq
+    """
+}
 
 // Channel: grab all FASTQ files from input folder
 	fastq_ch = Channel.fromPath("${params.input}/*.fastq.gz")
-
 
 //====================================================
 // Step 2: FastQC QC
