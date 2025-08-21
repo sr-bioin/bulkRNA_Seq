@@ -1,2 +1,1 @@
-# bulkRNA_Seq
-analysis
+## RNA-sequencing pipeline and differential gene expression analysis
