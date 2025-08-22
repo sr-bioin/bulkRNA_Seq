@@ -1,6 +1,6 @@
 ## RNA-sequencing pipeline and gene expression analysis </br>
 ###  Analysis steps   </br>
-    ####3Quality control (QC)
+    #### Quality control (QC)
     #### Align to the reference genome
     #### Post-alignment QC
     #### Visualisation
