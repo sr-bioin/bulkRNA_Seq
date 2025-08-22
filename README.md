@@ -1,6 +1,4 @@
-## RNA-sequencing pipeline and gene expression analysis
-Run using command line tools (bash):
-
+## RNA-sequencing pipeline and gene expression analysis </br>
     Quality control (QC)
     Align to the reference genome
     Post-alignment QC
