@@ -1,5 +1,5 @@
 ## RNA-sequencing pipeline and gene expression analysis </br>
-The aim of this project is to create an Nextflow pipeline for RNA seq analysis. <br>
+The aim of this project is to create an Nextflow pipeline for RNA seq analysis. The raw sequencing data can be found in the accession GSE106305 and Guo et al. Nature Communications 2019. <br>
 <h3>Pipeline summary</h3>
 
   1) Quality control (QC)<br/>
