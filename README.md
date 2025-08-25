@@ -3,10 +3,13 @@ The aim of this project is to create an Nextflow pipeline for RNA seq analysis. 
 <h3>Pipeline summary</h3>
 
   1) Quality control (QC)<br/>
-  ** FastQC ** : A Quality Control application for FastQ files
+    FastQC: A Quality Control application for FastQ files
     FastQC is a program designed to spot potential problems in high througput sequencing datasets. It runs a set of analyses on one or more raw sequence files in fastq or bam         format and produces a report which summarises the results.
   2) Align to the reference genome<br/>
+    STAR: 
   3) Post-alignment QC<br/>
+    QualiMap
   4) Visualisation<br/>
+  
   5) Quantify transcripts<br/>
   6) Visualise tracks against the reference genome<br/>
