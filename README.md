@@ -8,7 +8,7 @@ The aim of this project is to create an Nextflow pipeline for RNA seq analysis. 
   2) Align to the reference genome<br/>
     **STAR**: It aligns reads by finding the Maximal Mappable Prefix (MMP) hits between reads (or read pairs) and the genome, using a Suffix Array index. Different parts of a read can be mapped to different genomic positions, corresponding to splicing or RNA-fusions. More information can be found at https://github.com/alexdobin/STAR.
   3) Post-alignment QC<br/>
-    QualiMap
+    **QualiMap**: It is a multi-threaded application built in Java and R that provides a graphical user interface to perform the quality control of alignment sequencing data. More information can be found at http://qualimap.conesalab.org/.
   4) Visualisation<br/>
   
   5) Quantify transcripts<br/>
