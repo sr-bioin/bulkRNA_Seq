@@ -10,4 +10,4 @@ The aim of this project is to create an Nextflow pipeline for RNA seq analysis. 
   3) Post-alignment QC<br/>
     **QualiMap**: It is a multi-threaded application built in Java and R that provides a graphical user interface to perform the quality control of alignment sequencing data. More information can be found at http://qualimap.conesalab.org/.
   
-  4) Visualise tracks against the reference genome<br/>
+  4) Differential expressio <br/>
