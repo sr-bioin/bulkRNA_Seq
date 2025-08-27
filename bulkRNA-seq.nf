@@ -159,6 +159,33 @@ process star_align {
 }
 
 /****************************************************
+ * Step 6: Qualimap
+ ****************************************************/
+/*
+process qualimap {
+    tag { bam.baseName }
+    publishDir "${params.outdir}/qualimap", mode: 'copy'
+    
+    input:
+    tuple val(sample_id), path(bam)
+    
+    output:
+    tuple val(sample_id), path("${sample_id}_qualimap")
+    
+    script:
+    """
+    set -euo pipefail
+    module load qualimap
+
+    mkdir ${sample_id}_qualimap
+    qualimap bamqc \
+        -bam ${bam} \
+        -outdir ${sample_id}_qualimap \
+        -outformat PDF:HTML
+    """
+}
+
+/****************************************************
  * Workflow
  ****************************************************/
 workflow {
@@ -166,10 +193,10 @@ workflow {
     accession_ch = Channel.fromList(params.accessions)
     fastq_ch = sra_download(accession_ch)
 	
-	// 2. FastQC
+	// Step 2. FastQC
     fastqc(fastq_ch)
 	
-	// Step 3: Group FASTQs into samples
+	// Group FASTQs into samples
 samples_ch = fastq_ch
     .map { fq ->
         def id = fq.getName().replaceAll(/\.fastq(\.gz)?$/, "")
@@ -179,15 +206,18 @@ samples_ch = fastq_ch
     }
     .groupTuple()
 
-    // Step 4: Concatenate replicates
+    // Step 3: Concatenate replicates
     concatenated_ch = concatenate(samples_ch)
 
-    // Step 5: Wrap reference + annotation in channels, build STAR index once
+    // Step 4: Wrap reference + annotation in channels, build STAR index once
     reference_ch  = Channel.value(file(params.reference))
     annotation_ch = Channel.value(file(params.annotation))
 	index_dir_ch  = star_index(reference_ch, annotation_ch)													   
    
-    // Step 6: Align concatenated FASTQs
+    // Step 5: Align concatenated FASTQs
     star_align(concatenated_ch, index_dir_ch)
+	
+	// Step 6: Qualimap QC
+    qualimap(aligned_ch)
 	 
 }
