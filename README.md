@@ -11,4 +11,4 @@ The aim of this project is to create an Nextflow pipeline for RNA seq analysis. 
     **QualiMap**: It is a multi-threaded application built in Java and R that provides a graphical user interface to perform the quality control of alignment sequencing data. More information can be found at http://qualimap.conesalab.org/.
   
   4) Differential expression <br/>
-    **DESeq2**:
+    **DESeq2**: DESeq2 is a statistical tool that allows researchers to identify differentially expressed genes from RNA-Seq data. More information can be found at https://github.com/thelovelab/DESeq2
