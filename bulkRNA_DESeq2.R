@@ -13,7 +13,6 @@ BiocManager::install("vsn")
 # the reads whereas column 3 does not, proceed with using column 4 from 
 # each of the samples for downstream analysis.
 
-
 # Column to extract (4 = Python index 3)
 desired_column <- 4  
 output_directory <- "STAR_output/"
@@ -89,7 +88,7 @@ data <- data[,sort(colnames(data))]
 head(data)    # check head
 colSums(data) # check colum
 
-# ========================================================================
+# ===============================================================================================================
 # Differential expression analysis
 # Create the DESeq2 object 
 # construct the colData, identify biological replicates
@@ -111,7 +110,6 @@ head(dds@assays@data$counts)  # check the dds object
 normalized_counts <- counts(dds, normalized = T) # normalized 
 head(normalized_counts)
 
-
 # Result 
 res <- results(dds)
 res
@@ -127,7 +125,7 @@ resultsNames(dds)
 resLFC <- lfcShrink(dds, coef="condition_PC3_Normoxia_vs_LNCAP_Hypoxia", type="apeglm")
 resLFC
 
-#=========================================================================
+#==================================================================================================================
 # Annotation file with GRCh38 with Ensembl ID
 annotation <- read.csv("GRCh38.p13_annotation.csv", header = T, stringsAsFactors = F)
 head(annotation)
@@ -145,7 +143,7 @@ rld <- rlog(dds, blind = TRUE)
 head(assay(vsd), 3)
 head(assay(rld), 3)
 
-# =========================================================================
+# ==========================================================================================================
 # Visualization
 # MA plots
 plotMA(res, ylim=c(-2,2))
@@ -170,7 +168,7 @@ plotMA(resNorm, xlim=xlim, ylim=ylim, main="normal")
 plotMA(resAsh, xlim=xlim, ylim=ylim, main="ashr")
 dev.off()
 
-#=========================================================================
+#=============================================================================================================
 # Distance Plot
 plotDists = function (vsd.obj) {
   sampleDists <- dist(t(assay(vsd.obj)))
@@ -227,10 +225,11 @@ print(plot_PCA(vsd))
 dev.off()
 
 plot_PCA(vsd)
-library(degPlot)
 
 #-----------------------------------------------------------
 # PlotCounts
+library(degPlot)
+
 plotCounts(dds, gene="ENSG00000146678", intgroup="condition")
 d <- plotCounts(dds, gene="ENSG00000146678", intgroup="condition", 
                 returnData=TRUE)
@@ -268,7 +267,7 @@ ggplot(d, aes(x=condition, y=count, color=condition)) +
     panel.border = element_rect(color="black", fill=NA, linewidth=1)  # add box
   )
 
-#===============================================================================
+#==================================================================================================================
 # Making subsets -------LNCAP and PC3--------------------------
 generate_DESeq_object <- function(my_data, groups) {
   # Select samples for the two groups
@@ -294,7 +293,7 @@ LNCAP <- generate_DESeq_object(data, c("LNCAP_Hypoxia", "LNCAP_Normoxia"))
 PC3 <- generate_DESeq_object(data, c("PC3_Hypoxia", "PC3_Normoxia"))
 head(LNCAP)
 
-#===========================================================================
+#===================================================================================================================
 #Extracting DE results
 results(LNCAP, contrast = c("condition", "LNCAP_Hypoxia", "LNCAP_Normoxia"))
 results(dds, contrast = c("condition", "LNCAP_Hypoxia", "LNCAP_Normoxia"))
@@ -316,17 +315,17 @@ cpm <- edgeR::cpm(norm_counts)  # from edgeR
 avg_cpm <- rowMeans(cpm[, grepl("LNCAP", colnames(cpm))])
 #*******************************************************************************
 
-#------------------------
 generate_DE_results <- function(dds, groups, annotation) {
-  # DESeq2 results
+
+# DESeq2 results
   res <- results(dds, contrast = c("condition", groups[1], groups[2]))
   res_df <- as.data.frame(res)
   res_df$ensembl_id <- rownames(res_df)
   
-  # Remove unwanted DESeq2 columns
+# Remove unwanted DESeq2 columns
   res_df <- res_df[, !(colnames(res_df) %in% c("stat", "lfcSE"))]
   
-  # Normalized counts
+# Normalized counts
   norm_counts <- counts(dds, normalized = TRUE)
   cpm <- edgeR::cpm(norm_counts)  
   avg_cpm <- rowMeans(cpm[, grepl(groups[1], colnames(cpm)) | grepl(groups[2], colnames(cpm))])
@@ -335,14 +334,14 @@ generate_DE_results <- function(dds, groups, annotation) {
   counts_df$avg_cpm <- avg_cpm
   counts_df$ensembl_id <- rownames(counts_df)
   
-  # Join everything
+# Join everything
   combined <- res_df %>%
     left_join(annotation, by = c("ensembl_id" = "Gene.stable.ID")) %>%
     left_join(counts_df, by = "ensembl_id") %>%
     select(ensembl_id, baseMean, log2FoldChange, pvalue, padj, 
            Gene.name, Gene.type, avg_cpm, everything())
   
-  # Summary
+# Summary
   total_genes <- nrow(combined)
   sig_genes   <- sum(combined$padj < 0.001, na.rm = TRUE)
   lfc_genes   <- sum(combined$padj < 0.001 & abs(combined$log2FoldChange) > 0.5, na.rm = TRUE)
@@ -371,7 +370,7 @@ write.csv(pc3_output, file = "PC3_Hypoxia_vs_PC3_Normoxia_allgenes.csv",
 res_PC3 <- read.csv("PC3_Hypoxia_vs_PC3_Normoxia_allgenes.csv", header = TRUE)
 head(res_PC3)
 
-#===============================================================================
+#==============================================================================================================
 # Differential gene heatmap
 library(dplyr)
 library(pheatmap)
@@ -430,7 +429,7 @@ grid::grid.draw(pheatmap(mat,
                          border_color = NA)
                 $gtable)
 dev.off()
-#===============================================================================
+#=====================================================================================================================
 # Volcano plot-
 library(dplyr)
 library(ggplot2)
@@ -544,21 +543,22 @@ ggsave("volcano_plot_PC3.png",
        dpi = 300,        # Higher resolution
        bg = "white")
 
-# =========================================================================
+# ===============================================================================================================
 # Making subsets -------LNCAP and PC3--------------------------
 generate_DESeq_object <- function(my_data, groups) {
+
   # Select samples for the two groups
   selected_cols <- grep(paste0("^(", paste(groups, collapse = "|"), ")"), colnames(my_data))
   count_data <- my_data[, selected_cols]
   
-  # Create condition labels
+# Create condition labels
   condition <- factor(ifelse(grepl(paste0("^", groups[1]), colnames(count_data)),
                              groups[1], groups[2]))
   
   col_data <- data.frame(condition = condition,
                          row.names = colnames(count_data))
   
-  # Build DESeq2 object
+# Build DESeq2 object
   dds <- DESeqDataSetFromMatrix(countData = count_data,
                                 colData = col_data,
                                 design = ~ condition)
@@ -581,17 +581,15 @@ PC3_vis <- variable_gene_heatmap(pc3_vsd, 30, annotation = annotation,
 
 grid.arrange(LNCAP_vis$gtable, PC3_vis$gtable, ncol = 2)
 
-# ========================================================================
-# Gene set enrichment analysis
+# ==================================================================================================================
+# Gene set enrichment analysis Hall mark_pathway.gmt
 
 library(fgsea)
 # read in file containing lists of genes for each pathway
-hallmark_pathway <- gmtPathways("h.all.v7.0.symbols.gmt.txt")
+hallmark_pathway <- gmtPathways("h.all.v7.0.symbols.gmt")
 head(names(hallmark_pathway))
 
-
-#===============================================================================
-#----To extract ranked genes----------------------------------------------------
+# Extract ranked genes------------
 library(dplyr)
 library(stringr)
 
@@ -609,37 +607,85 @@ write.table(
   sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE
 )
 
+# load the ranked list
+lncap_ranked_list <- read.table("LNCAP_Hypoxia_vs_LNCAP_Normoxia_proteins.rnk", header = T, stringsAsFactors = F)
+head(lncap_ranked_list)
 
-#check
-lines <- readLines("LNCAP_Hypoxia_vs_LNCAP_Normoxia_proteins.rnk")
-head(lines, 5)   # preview first lines
-tail(lines, 5)   # preview last lines
-any(!grepl("^[^[:space:]]+\t-?[0-9.eE]+$", lines))  # should be FALSE
+# Ranked list
+prepare_ranked_list <- function(df) {
+  df %>%
+    group_by(Gene.name) %>%
+    summarize(log2FoldChange = mean(log2FoldChange, na.rm = TRUE), .groups = "drop") %>%
+    arrange(desc(log2FoldChange)) %>%
+    drop_na() %>%
+    deframe()
+}
 
-#
-lines <- readLines("LNCAP_Hypoxia_vs_LNCAP_Normoxia_proteins.rnk")
-any(!grepl("^[^[:space:]]+\t-?[0-9.eE]+$", lines))
+lncap_ranked_list <- prepare_ranked_list(lncap_ranked_list)
+head(lncap_ranked_list)
 
-#-------------------------------------------
+# halmark_pathways
+fgsea_results_PW <- fgseaMultilevel(pathways = hallmark_pathway,
+                                 stats = lncap_ranked_list,
+                                 minSize = 15,
+                                 maxSize = 500)
+
+fgsea_results_PW %>% arrange (desc(NES)) %>% select (pathway, padj, NES) %>% head()
+
+# Waterfall Plot
+library(dplyr)
+library(ggplot2)
+library(stringr)
+
+waterfall_plot <- function(fgsea_results_PW, title = "Waterfall Plot") {
+  fgsea_results_PW %>%
+    mutate(pathway = str_remove(pathway, "^HALLMARK_")) %>%
+    ggplot(aes(x = reorder(pathway, NES), y = NES, fill = padj < 0.05)) +
+    geom_col() +
+    coord_flip() +
+    labs(x = "Hallmark Pathway", y = "Normalized Enrichment Score", title = title) +
+    theme(axis.text.y = element_text(size = 30),       # increase y-axis labels
+          axis.text.x = element_text(size = 30),       # increase x-axis labels
+          axis.title = element_text(size = 45, face = "bold"),  # axis titles
+          plot.title = element_text(hjust = 0.5, size = 60, face = "bold"), # title
+          legend.text = element_text(size = 20),      # legend text
+          legend.title = element_text(size = 45, face = "bold"))
+}
+
+# Display plot
+# waterfall_plot(fgsea_results_PW, "Hallmark pathways altered by hypoxia in LNCaP cells")
+
+# Save the plot
+ggsave("LNCAP_waterfall_PW.png", waterfall_plot(fgsea_results_PW, "Hallmark pathways altered by hypoxia in LNCaP cells"),
+       width = 30, height = max(6, nrow(fgsea_results_PW)/2))
+
+#===============================================================================
+# Using msigdbr for analysis
 library(msigdbr)
+library(dplyr)
+library(tibble)
 
 # Get all hallmark gene sets for human
 hallmark <- msigdbr(species = "Homo sapiens", category = "H")
-
 # Filter for hypoxia only
 hallmark_hypoxia_genes <- subset(hallmark, gs_name == "HALLMARK_HYPOXIA")
-
 # Extract just the gene symbols
 hypoxia_genes <- unique(hallmark_hypoxia_genes$gene_symbol)
 head(hypoxia_genes)
 
+#-------------------------------
 # LNCAP ranked genes
 lncap_ranked_list <- read.table("LNCAP_Hypoxia_vs_LNCAP_Normoxia_proteins.rnk", header = T, stringsAsFactors = F)
 head(lncap_ranked_list)
 
+# hallmark_pathways list exactly like gmtPathways() 
+hallmark.pathways <- msigdbr(species = "Homo sapiens", category = "H") %>%
+  group_by(gs_name) %>%
+  summarise(genes = list(unique(gene_symbol)), .groups = "drop") %>%
+  deframe()
+head(names(hallmark.pathways))
+
 # format ranked list for the fgsea() function
-library(dplyr)
-library(tibble)
 
 prepare_ranked_list <- function(df) {
   df %>%
@@ -653,45 +699,72 @@ prepare_ranked_list <- function(df) {
 lncap_ranked_list <- prepare_ranked_list(lncap_ranked_list)
 head(lncap_ranked_list)
 
-#---
+# halmark_pathways
+fgsea_results_msigdbr <- fgseaMultilevel(pathways = hallmark.pathways,
+                                    stats = lncap_ranked_list,
+                                    minSize = 15,
+                                    maxSize = 500)
+
+fgsea_results_msigdbr %>% arrange (desc(NES)) %>% select (pathway, padj, NES) %>% head()
+
+# Waterfall Plot
+library(dplyr)
+library(ggplot2)
+library(stringr)
+
+waterfall_plot <- function(fgsea_results_msigdbr, title = "Waterfall Plot") {
+  fgsea_results_msigdbr %>%
+    mutate(pathway = str_remove(pathway, "^HALLMARK_")) %>%
+    ggplot(aes(x = reorder(pathway, NES), y = NES, fill = padj < 0.05)) +
+    geom_col() +
+    coord_flip() +
+    labs(x = "Hallmark Pathway", y = "Normalized Enrichment Score", title = title) +
+    theme(axis.text.y = element_text(size = 30),       # increase y-axis labels
+          axis.text.x = element_text(size = 30),       # increase x-axis labels
+          axis.title = element_text(size = 45, face = "bold"),  # axis titles
+          plot.title = element_text(hjust = 0.5, size = 60, face = "bold"), # title
+          legend.text = element_text(size = 20),      # legend text
+          legend.title = element_text(size = 45, face = "bold"))
+}
+
+# Display plot
+# waterfall_plot(fgsea_results_PW, "Hallmark pathways altered by hypoxia in LNCaP cells")
+
+# Save the plot
+ggsave("LNCAP_waterfall_msigdbr.png", waterfall_plot(fgsea_results_PW, "Hallmark pathways altered by hypoxia in LNCaP cells"),
+       width = 30, height = max(6, nrow(fgsea_results_PW)/2))
+
+
 # Suppose your DE results are in a data frame 'res_prot' with columns Gene.name and log2FoldChange
 lncap_ranked_list <- res_prot$log2FoldChange        # numeric vector
 names(lncap_ranked_list) <- res_prot$Gene.name     # assign gene names
 lncap_ranked_list <- sort(lncap_ranked_list, decreasing = TRUE)
 
+hypoxia_genes <- list(Hypoxia = hypoxia_genes)
 
-fgsea_results <- fgsea(
-  pathways = hypoxia_genes,
-  stats = lncap_ranked_list,
-  minSize = 15,
-  maxSize = 500
-)
+#=====================================================================================================================
+# Enriched specific pathways 
+plot_enrichment <- function(geneset, pathway, ranked_list) {
+  enrich_plot <- plotEnrichment(geneset[[pathway]], ranked_list)
+  enrich_plot$layers[[1]]$aes_params$colour <- "blue"
+  enrich_plot + labs(title = pathway)
+}
 
-# View top pathways
-fgsea_results %>%
-  arrange(desc(NES)) %>%
-  select(pathway, padj, NES) %>%
-  head()
+# Example usage
+plot_enrichment(hallmark_pathway, "HALLMARK_HYPOXIA", lncap_ranked_list)
 
-
-
-
-
-
+ggsave("HALLMARK_HYPOXIA_enriched.png",
+       plot_enrichment(hallmark_pathway, "HALLMARK_HYPOXIA", lncap_ranked_list),
+       width = 8,
+       height = 4)
 
 
+# Negatively enriched pathway 
+plot_enrichment(hallmark_pathway, "HALLMARK_PEROXISOME",
+                lncap_ranked_list)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ggsave("HALLMARK_PEROXISOME_negatively_enriched.png",
+       plot_enrichment(hallmark_pathway, "HALLMARK_PEROXISOME",
+                       lncap_ranked_list),
+       width = 8,
+       height = 4)
