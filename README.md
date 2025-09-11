@@ -12,5 +12,5 @@ The aim of this project is to create an Nextflow pipeline for RNA seq analysis. 
   
   4) Differential expression <br/>
     **DESeq2**: DESeq2 is a statistical tool that allows researchers to identify differentially expressed genes from RNA-Seq data. More information can be found at https://github.com/thelovelab/DESeq2 <br/>
-     <img width="500" height="400" alt="LNCAP_volcano_plot" src="https://github.com/user-attachments/assets/6c8ce0d8-140e-4627-8e72-83f409aa2ce4" />
+     <img width="600" height="550" alt="LNCAP_volcano_plot" src="https://github.com/user-attachments/assets/6c8ce0d8-140e-4627-8e72-83f409aa2ce4" />
 
